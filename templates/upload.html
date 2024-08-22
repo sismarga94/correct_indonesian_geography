@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block title %}Upload File{% endblock %}
+
+{% block content %}
+    <div class="bordered">
+        <h1 class="mt-5">Upload a file</h1>
+        <hr>
+        <div class="alert alert-info">
+            <strong>Rules:</strong>
+            <ul>
+                <li>The CSV/Excel file should contain the following columns in order:</li>
+                <table class="table table-dark">
+                    <thead>
+                        <tr>
+                            <th>province</th>
+                            <th>city</th>
+                            <th>district</th>
+                            <th>sub_district</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>province name</td>
+                            <td>city name</td>
+                            <td>district name</td>
+                            <td>sub_district name</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <li>The XML file should contain the following structure:</li>
+                <p>
+                    &lt;root&gt;<br>
+                        &ensp;&lt;row&gt;<br>
+                           &emsp;&lt;province&gt;province name&lt;/province&gt;<br>
+                           &emsp;&lt;city&gt;city name&lt;/city&gt;<br>
+                           &emsp;&lt;district&gt;district name&lt;/district&gt;<br>
+                           &emsp;&lt;sub_district&gt;sub_district name&lt;/sub_district&gt;<br>
+                        &ensp;&lt;/row&gt;<br>
+                    &lt;/root&gt;<br>
+                </p>
+                <li>The JSON file should contain the following structure:</li>
+                <p>
+                    [{<br>
+                           &emsp;"province":"province name",<br>
+                           &emsp;"city":"city name",<br>
+                           &emsp;"district":"district name",<br>
+                           &emsp;"sub_district":"sub_district name"<br>
+                    }]<br>
+                </p>
+                <li>Accepted file formats: .csv, .xls, .xlsx, .xml, .json</li>
+            </ul>
+        </div>
+        <form action="/upload" enctype="multipart/form-data">
+            <div class="form-group">
+                <input type="file" name="file" class="form-control-file" accept=".csv, .xls, .xlsx, .xml, .json">
+            </div>
+            <button type="button" class="btn btn-primary" id="upload-button" onclick="uploadFile()">Upload</button>
+        </form>
+    </div>
+    <div id="loading" class="bordered text-center" style="display:none;">
+        <h2>Processing...</h2>
+        <div class="spinner-border" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+    <script>
+        async function uploadFile() {
+            const fileInput = document.querySelector('input[name="file"]');
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+
+            const loadingDiv = document.getElementById('loading');
+            const uploadButton = document.getElementById('upload-button');
+            loadingDiv.style.display = 'block';
+            uploadButton.disabled = true;
+
+            try {
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const downloadUrl = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = downloadUrl;
+                    a.download = fileInput.files[0].name;
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    URL.revokeObjectURL(downloadUrl);
+                } else {
+                    console.error('Upload failed:', await response.text());
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            } finally {
+                loadingDiv.style.display = 'none';
+                uploadButton.disabled = false;
+            }
+        }
+    </script>
+{% endblock %}

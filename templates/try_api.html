@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}Try API{% endblock %}
+
+{% block content %}
+    <div class="bordered">
+        <h1 class="mt-5">Try the API</h1>
+        <hr>
+        <form id="api-form">
+            <div class="form-group">
+                <label for="province">Province Name (Provinsi)</label>
+                <input type="text" class="form-control" id="province" name="province">
+            </div>
+            <div class="form-group">
+                <label for="city">City Name (Kota/Kabupaten)</label>
+                <input type="text" class="form-control" id="city" name="city">
+            </div>
+            <div class="form-group">
+                <label for="district">District Name (Kecamatan)</label>
+                <input type="text" class="form-control" id="district" name="district">
+            </div>
+            <div class="form-group">
+                <label for="sub_district">Subdistrict Name (Kelurahan)</label>
+                <input type="text" class="form-control" id="sub_district" name="sub_district">
+            </div>
+            <button type="button" id="check-button" class="btn btn-primary" onclick="checkAPI()">Check</button>
+        </form>
+    </div>
+    <div class="bordered" id="results" style="display:none;">
+        <h2>Results</h2>
+        <div id="result-content">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Key</th>
+                        <th>Value</th>
+                    </tr>
+                </thead>
+                <tbody id="resultTableBody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script>
+        async function checkAPI() {
+            const form = document.getElementById('api-form');
+            const formData = new FormData(form);
+            const resultsDiv = document.getElementById('results');
+            const resultContent = document.getElementById('result-content');
+            const checkButton = document.getElementById('check-button');
+            checkButton.disabled = true;
+            const requestData = {};
+            formData.forEach((value, key) => {
+                requestData[key] = value;
+            });
+
+            try {
+                const response = await fetch('/api/check', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(requestData)
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok.');
+                }
+
+                const result = await response.json();
+                resultTableBody.innerHTML = ''; // Clear previous results
+
+                Object.entries(result.data).forEach(([key, value]) => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${key}</td>
+                        <td>${value}</td>
+                    `;
+                    resultTableBody.appendChild(row);
+                });
+
+                resultsDiv.style.display = 'block';
+
+            } catch (error) {
+                console.error('Error:', error);
+            }
+            checkButton.disabled = false;
+        }
+    </script>
+{% endblock %}
