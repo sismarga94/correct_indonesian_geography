@@ -1,0 +1,36 @@
+1. sudo apt-get update
+
+2. sudo apt-get install build-essential gdb lcov libbz2-dev libffi-dev libgdbm-dev liblzma-dev libncurses5-dev libreadline6-dev libsqlite3-dev libssl-dev lzma lzma-dev tk-dev uuid-dev zlib1g.dev
+
+3. wget https://www.python.org/ftp/python/3.10.14/Python-3.10.14.tgz
+
+4. tar zxvf Python-3.10.14.tgz
+
+5. rm Python-3.10.14.tgz
+
+6. cd Python-3.10.14
+
+7. ./configure --enable-optimizations
+
+8. make -j 16
+
+9. sudo make altinstall (make python executable)
+
+10. vim ~/.bashrc 
+write alias python="/usr/local/bin/python3.10"
+source ~/.venv/bin/activate
+:wq
+
+11. source ~/.bashrc
+
+12. python -m venv ~/.venv (we want python to live in this venv)
+
+13. source ~/.venv/bin/activate
+
+14. uvicorn app.main:app --reload
+
+15. requirements.txt add 'ludwig' for ML purposes
+
+16. extensions download github copilot
+
+
