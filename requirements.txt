@@ -28,7 +28,7 @@ greenlet~=3.0.3
 pycparser~=2.21
 
 xlwings~=0.31.4
-et_xmlfile~=1.1.0=
+et_xmlfile~=1.1.0
 python-dateutil~=2.9.0.post0
 httpx~=0.27.0
 
