@@ -10,5 +10,5 @@ jobs:
       with:
         python-versiom: 3.10
     - name: Install dependencies
-      run:
+      run: |
         make install
